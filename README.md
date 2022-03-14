@@ -5,4 +5,5 @@ can't be fucked adding a good readme.md :)
 
 # Join my Discord server!
 It's totally not dead as fuck
+
 [Discord](https://discord.gg/pqAFVCKZhz)
