@@ -20,9 +20,9 @@
 # Os is used to clear the screen.
 # Time is used to wait a specific amount of seconds at times.
 # Termcolor is used to change the color of text.
-import random
-import os
-import time
+from random import randint
+from os import name, system
+from time import sleep
 from termcolor import colored, cprint
 
 
@@ -40,13 +40,13 @@ input("Press enter to begin")
 # This clears the screen.
 # With the "if os.name == 'nt'" it checks if the OS is Windows. Else it will just run clear
 # This is because Windows has a different clear command.
-os.system("cls" if os.name == "nt" else "clear")
+system("cls" if name == "nt" else "clear")
 
 # Main loop for the game
 playing = True
 while playing == True:
     # Generates a random number between 0 and 100
-    secret = random.randint(0, 100)
+    secret = randint(0, 100)
     # This is the number of guesses the player has made
     guesses = 0   
 
@@ -61,7 +61,7 @@ while playing == True:
         # The program will try run this code, but if a "ValueError" is raised, it will skip this
         try:
             guess = int(input("Number: "))
-            os.system("cls" if os.name == "nt" else "clear")
+            system("cls" if name == "nt" else "clear")
             
             # Checks if the input was a number and isn't too high or low
             if str(guess).isnumeric() == False or guess > 100 or guess < 0:
@@ -93,11 +93,13 @@ while playing == True:
             # I think its impossible to get here but you never know ;)
             else:
                 print("idk how you got here...\n")
+                input()
+                exit()
 
         # This is if the guess caused a value error
         # This is because the user didn't enter anything
         except ValueError:
-            os.system("cls" if os.name == "nt" else "clear")
+            system("cls" if name == "nt" else "clear")
             cprint("Invalid input\n", "red")
             continue
 
@@ -114,20 +116,20 @@ while playing == True:
         # If they answer with no
         if answer == "n":
             cprint("Thanks for playing!", "green", attrs=["bold"])
-            time.sleep(2)
+            sleep(2)
             exit()
 
         # If they answer with yes
         elif answer == "y":
-            os.system("cls" if os.name == "nt" else "clear")
+            system("cls" if name == "nt" else "clear")
             guessing = True
             win = False
 
         # If they answer with something else
         else:
             cprint("Invalid input", "red")
-            time.sleep(2)
-            os.system("cls" if os.name == "nt" else "clear")
+            sleep(2)
+            system("cls" if name == "nt" else "clear")
 
 # I had a lot of fun making this and I hope you enjoy it!
 # I have done my best to check for any errors and to avoid crashes
