@@ -15,15 +15,14 @@
 
 # Imports random, os, time and termcolor modules.
 
-# Random is used to generate random numbers.
 # Os is used to clear the screen.
+# Random is used to generate random numbers.
 # Time is used to wait a specific amount of seconds at times.
 # Termcolor is used to change the color of text.
-from random import randint
 from os import name, system
+from random import randint
 from time import sleep
 from termcolor import colored, cprint
-
 
 # Clears screen to make colour's work on Windows.
 system("cls" if name == "nt" else "clear")
