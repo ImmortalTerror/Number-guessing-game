@@ -1,4 +1,5 @@
 # Python "guess the number" game by Levi Miller for IST Y9
+# Note: Remade a lot of this. Made it much nicer.
 
 # INSTRUCTIONS:
 # The computer program must generate a random number called “secret” between 1 and 100.
@@ -22,57 +23,111 @@
 from os import name, system
 from random import randint
 from time import sleep
-from termcolor import colored, cprint
+from termcolor import colored as c, cprint
+
+
+# Check function
+def check(secret: int, guess: int) -> str or bool:
+    """Checks how close guess is to secret
+
+    Args:
+        secret (int): Secret number
+        guess (int): Users guessed number
+
+    Raises:
+        TypeError: If either guess or secret is not an int
+
+    Returns:
+        str: Coloured text based on your guess
+    """
+    if type(secret) != int or type(guess) != int:
+        raise TypeError("Guess and Secret must be an int")
+
+    if guess > 100 or guess < 0:
+        return outputs["invalid"]
+
+    if guess == secret:
+        return True
+
+    # Calculates possible values for outputs
+    values = {
+        "boiling": range(secret - 5, secret + 6),
+        "hot": [range(secret - 10, secret - 4), range(secret + 6, secret + 11)],
+        "warm": [range(secret - 20, secret - 9), range(secret + 10, secret + 21)],
+        "cold": [range(secret - 40, secret - 19), range(secret + 20, secret + 41)],
+    }
+
+    # Checks calculated ranges and compares to guess and outputs string
+    for i in values.items():
+        if type(i[1]) == list:
+            for r in i[1]:
+                if guess in r and guess != secret:
+                    return outputs[i[0]]
+        else:
+            if guess in i[1] and guess != secret:
+                return outputs[i[0]]
+    # If all checks failed, guess is in freezing range
+    return outputs["freezing"]
+
 
 # Clears screen to make colour's work on Windows.
 system("cls" if name == "nt" else "clear")
-# Tells you how the game works
+# Tells user how the game works
 print(
     "Im thinking of a number between "
-    + colored("0", "red")
+    + c("0", "red")
     + " and "
-    + colored("100", "red")
+    + c("100", "red")
     + """
 You need to guess this number
 If I tell you """
-    + colored("boiling", "red", attrs=["bold"])
+    + c("boiling", "red", attrs=["bold"])
     + ", your within "
-    + colored("5", "red")
+    + c("5", "red")
     + """
 If I tell you """
-    + colored("hot", "yellow", attrs=["bold"])
+    + c("hot", "yellow", attrs=["bold"])
     + ", your within "
-    + colored("10", "yellow")
+    + c("10", "yellow")
     + """
 If I tell you """
-    + colored("warm", "green", attrs=["bold"])
+    + c("warm", "green", attrs=["bold"])
     + ", your within "
-    + colored("30", "green")
+    + c("30", "green")
     + """
 If I tell you """
-    + colored("cold", "cyan", attrs=["bold"])
+    + c("cold", "cyan", attrs=["bold"])
     + ", your within "
-    + colored("40", "cyan")
+    + c("40", "cyan")
     + """
 And if I say """
-    + colored("freezing", "blue", attrs=["bold"])
+    + c("freezing", "blue", attrs=["bold"])
     + ", your over "
-    + colored("40", "blue")
+    + c("40", "blue")
     + " away from my number\n"
 )
 input("Press enter to begin")
 
+# Coloured output text dictionary
+outputs = {
+    "invalid": c("Invalid input", "red"),
+    "boiling": c("Boiling", "red", attrs=["bold"]),
+    "hot": c("Hot", "yellow", attrs=["bold"]),
+    "warm": c("Warm", "green", attrs=["bold"]),
+    "cold": c("Cold", "cyan", attrs=["bold"]),
+    "freezing": c("Freezing", "blue", attrs=["bold"]),
+}
+
 # This clears the screen.
 # With the "if os.name == 'nt'" it checks if the OS is Windows. Else it will just run clear
-# This is because Windows has a different clear command.
+# This is because Windows has a different clear command to other OS's.
 system("cls" if name == "nt" else "clear")
 
 # Main loop for the game
-playing = True
-while playing == True:
-    # Generates a random number between 0 and 100
+while True:
+    # Calculates secret number
     secret = randint(0, 100)
-    # This is the number of guesses the player has made
+    # Number of guesses user has made
     guesses = 0
 
     # Loop for guessing
@@ -80,99 +135,59 @@ while playing == True:
     while guessing == True:
         guesses += 1
         print("Guess a number between 0 and 100")
-        # This shows your number of guesses
+        # shows your number of guesses
         print(
-            "This is your " + colored("first", "red", attrs=["bold"]) + " guess"
+            "This is your " + c("first", "red", attrs=["bold"]) + " guess"
             if guesses == 1
-            else "You have tried " + colored(guesses, "red", attrs=["bold"]) + " times"
+            else "You have tried " + c(guesses, "red", attrs=["bold"]) + " times"
         )
 
-        # The program will try run this code, but if a "ValueError" is raised, it will skip this
+        # The program will try run this code, but if an error is raised, output "invalid input"
         try:
+            # Gets user input and runs through check func
             guess = int(input("Number: "))
             system("cls" if name == "nt" else "clear")
 
-            # Checks if the input was a number and isn't too high or low
-            if str(guess).isnumeric() == False or guess > 100 or guess < 0:
-                cprint("Invalid input\n", "red")
+            checked = check(secret, guess)
 
-            # Checks if the number is within 5 of the secret number
-            elif guess in range(secret - 5, secret + 5) and guess != secret:
-                cprint("Boiling\n", "red", attrs=["bold"])
-
-            # Checks if the number is within 10 of the secret number
-            elif guess in range(secret - 10, secret - 5) or guess in range(
-                secret + 5, secret + 10
-            ):
-                cprint("Hot\n", "yellow", attrs=["bold"])
-
-            # Checks if the number is within 30 of the secret number
-            elif guess in range(secret - 20, secret - 10) or guess in range(
-                secret + 10, secret + 20
-            ):
-                cprint("Warm\n", "green", attrs=["bold"])
-
-            # Checks if the number is within 40 of the secret number
-            elif guess in range(secret - 40, secret - 20) or guess in range(
-                secret + 20, secret + 40
-            ):
-                cprint("Cold\n", "cyan", attrs=["bold"])
-
-            # Checks if the number is over 40 away from the secret number
-            elif (
-                guess <= secret + 40
-                and guess != secret
-                or guess >= secret - 40
-                and guess != secret
-            ):
-                cprint("Freezing\n", "blue", attrs=["bold"])
-
-            # Checks if the number is the secret number
-            elif guess == secret:
+            # If user guessed the secret number
+            if checked == True:
                 guessing = False
-
-            # I think its impossible to get here but you never know ;)
             else:
-                print("idk how you got here...\n")
-                input()
-                exit()
+                print(f"{checked}\n")
 
-        # This is if the guess caused a value error
-        # This is because the user didn't enter anything
-        except ValueError:
+        # If an invalid input was given
+        except:
             system("cls" if name == "nt" else "clear")
-            cprint("Invalid input\n", "red")
-            continue
+            print(outputs["invalid"] + "\n")
 
-    # This is if the player guessed the number
+    # When the player has guessed the correct number
     print(
         "You guessed the right number in "
-        + colored(guesses, "red", attrs=["bold"])
+        + c(guesses, "red", attrs=["bold"])
         + " guesses!"
     )
 
-    # This is if the player wants to play again
+    # Asks if the player would like to play again
     win = True
     while win == True:
-        print(
-            "Would you like to play again? " + colored("(Y/N)", "green", attrs=["bold"])
-        )
+        print("Would you like to play again? " + c("(Y/N)", "green", attrs=["bold"]))
         # Makes sure the users input is in lowercase
         answer = input().lower()
 
-        # If they answer with no
+        # If they answered with no
         if answer == "n":
             cprint("Thanks for playing!", "green", attrs=["bold"])
             sleep(2)
             exit()
 
-        # If they answer with yes
+        # If they answered with yes
         elif answer == "y":
             system("cls" if name == "nt" else "clear")
             guessing = True
             win = False
 
-        # If they answer with something else
+        # If they answered with something invalid
         else:
             cprint("Invalid input", "red")
             sleep(2)
