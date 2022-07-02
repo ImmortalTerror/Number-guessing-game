@@ -39,6 +39,7 @@ def check(secret: int, guess: int) -> str or bool:
 
     Returns:
         str: Coloured text based on your guess
+        bool: If the guess was correct
     """
     if type(secret) != int or type(guess) != int:
         raise TypeError("Guess and Secret must be an int")
