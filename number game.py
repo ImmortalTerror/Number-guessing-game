@@ -41,32 +41,35 @@ def check(secret: int, guess: int) -> str or bool:
         str: Coloured text based on your guess
         bool: If the guess was correct
     """
+    # Makes sure both arguments are integers
     if type(secret) != int or type(guess) != int:
         raise TypeError("Guess and Secret must be an int")
 
+    # If the guess is higher than 100 or lower than 0
     if guess > 100 or guess < 0:
         return outputs["invalid"]
 
+    # If the guess is equal to the secret number
     if guess == secret:
         return True
 
-    # Calculates possible values for outputs
+    # Calculates the distance between the secret and guess
+    dist = abs(secret - guess)
+
+    # Calculates the ranges for each output
     values = {
-        "boiling": range(secret - 5, secret + 6),
-        "hot": [range(secret - 10, secret - 4), range(secret + 6, secret + 11)],
-        "warm": [range(secret - 20, secret - 9), range(secret + 10, secret + 21)],
-        "cold": [range(secret - 40, secret - 19), range(secret + 20, secret + 41)],
+        "boiling": range(1, 6),
+        "hot": range(6, 11),
+        "warm": range(11, 21),
+        "cold": range(21, 41),
     }
 
-    # Checks calculated ranges and compares to guess and outputs string
+    # Checks if the distance is in any of the ranges
+    # If it is, outputs a string depending on which range
     for i in values.items():
-        if type(i[1]) == list:
-            for r in i[1]:
-                if guess in r and guess != secret:
-                    return outputs[i[0]]
-        else:
-            if guess in i[1] and guess != secret:
-                return outputs[i[0]]
+        if dist in i[1] and guess != secret:
+            return outputs[i[0]]
+
     # If all checks failed, guess is in freezing range
     return outputs["freezing"]
 
